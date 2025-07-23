@@ -12,13 +12,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install cross-compiler, tools, and OpenCV
-        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu make libopencv-dev
-
       - name: Build static library for ARM64
         run: |
           make clean
-          make lib CXX=aarch64-linux-gnu-g++ CXXFLAGS="-std=c++20 -Wall -Wextra -O2 -g"
+          make lib
 
       - name: Upload ARM64 library artifact
         uses: actions/upload-artifact@v4
