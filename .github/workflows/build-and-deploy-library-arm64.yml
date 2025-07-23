@@ -1,5 +1,4 @@
 name: Build and Deploy C++ Library for Raspberry Pi 5 (ARM64)
-
 on:
   push:
     branches: [ main ]
@@ -8,13 +7,13 @@ on:
 
 jobs:
   build-library-arm64:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install cross-compiler and tools
-        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu make
+      - name: Install cross-compiler, tools, and OpenCV
+        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu make libopencv-dev
 
       - name: Build static library for ARM64
         run: |
