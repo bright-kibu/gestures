@@ -1,3 +1,13 @@
+# Build static library from core sources
+LIBRARY = libgestures.a
+LIB_SOURCES = Config.cpp Base.cpp Detector.cpp Landmark.cpp Gesture.cpp visualization.cpp
+LIB_OBJECTS = $(LIB_SOURCES:.cpp=.o)
+
+lib: $(LIBRARY)
+
+$(LIBRARY): $(LIB_OBJECTS)
+	ar rcs $@ $^
+
 camera-debug: CXXFLAGS_CAMERA = $(DEBUGFLAGS_CAMERA)
 camera-debug: clean-camera camera
 test_mock_detection: test_mock_detection.o $(CAMERA_LIBRARY)

@@ -1,0 +1,46 @@
+name: Build and Deploy C++ Library
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-library:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+
+      - name: Build static library
+        run: make lib
+
+      - name: Upload library artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libgestures
+          path: libgestures.a
+
+  deploy-library:
+    needs: build-library
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Download library artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: libgestures
+
+      - name: Upload to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: libgestures.a
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# For Raspberry Pi 5 cross-compilation, you would need a cross-compiler and a separate job or Docker image.
+# This workflow builds a generic static library for Linux x86_64. For Pi 5, see below for guidance.
