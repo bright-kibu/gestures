@@ -39,6 +39,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: libgestures.a
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
       
       - name: Create DEB package
         run: |
@@ -74,3 +76,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: kibu-gestures_${{ github.ref_name }}_arm64.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
