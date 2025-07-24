@@ -43,22 +43,34 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Create DEB package
-        uses: damianh/deb-pkg@v1
-        with:
-          package: kibu-gestures
-          version: ${{ github.ref_name }}
-          maintainer: Your Name <your@email.com>
-          arch: arm64
-          description: "Hand gesture recognition C++ library"
-          files: |
-            libgestures.a:/usr/local/lib/libgestures.a
-            Config.hpp:/usr/local/include/Config.hpp
-            Base.hpp:/usr/local/include/Base.hpp
-            Detector.hpp:/usr/local/include/Detector.hpp
-            Landmark.hpp:/usr/local/include/Landmark.hpp
-            Gesture.hpp:/usr/local/include/Gesture.hpp
-            visualization.hpp:/usr/local/include/visualization.hpp
-          dependencies: "libopencv-dev"
+        run: |
+          set -e
+          PKGNAME=kibu-gestures
+          VERSION=${{ github.ref_name }}
+          ARCH=arm64
+          DEBROOT=debbuild/${PKGNAME}_${VERSION}
+          mkdir -p $DEBROOT/usr/local/lib
+          mkdir -p $DEBROOT/usr/local/include
+          cp libgestures.a $DEBROOT/usr/local/lib/
+          cp Config.hpp $DEBROOT/usr/local/include/
+          cp Base.hpp $DEBROOT/usr/local/include/
+          cp Detector.hpp $DEBROOT/usr/local/include/
+          cp Landmark.hpp $DEBROOT/usr/local/include/
+          cp Gesture.hpp $DEBROOT/usr/local/include/
+          cp visualization.hpp $DEBROOT/usr/local/include/
+          mkdir -p $DEBROOT/DEBIAN
+          cat <<EOF > $DEBROOT/DEBIAN/control
+          Package: $PKGNAME
+          Version: $VERSION
+          Section: libs
+          Priority: optional
+          Architecture: $ARCH
+          Maintainer: Your Name <your@email.com>
+          Description: Hand gesture recognition C++ library
+          Depends: libopencv-dev
+          EOF
+          dpkg-deb --build $DEBROOT
+          mv debbuild/${PKGNAME}_${VERSION}.deb ${PKGNAME}_${VERSION}_${ARCH}.deb
 
       - name: Upload DEB to GitHub Releases
         uses: softprops/action-gh-release@v2
