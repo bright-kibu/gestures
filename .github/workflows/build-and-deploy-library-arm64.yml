@@ -25,8 +25,8 @@ jobs:
 
   deploy-library-arm64:
     needs: build-library-arm64
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: self-hosted
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Download ARM64 library artifact
         uses: actions/download-artifact@v4
@@ -39,6 +39,28 @@ jobs:
           files: libgestures.a
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create DEB package
+        uses: damianh/deb-pkg@v1
+        with:
+          package: kibu-gestures
+          version: ${{ github.ref_name }}
+          maintainer: Your Name <your@email.com>
+          arch: arm64
+          description: "Hand gesture recognition C++ library"
+          files: |
+            libgestures.a:/usr/local/lib/libgestures.a
+            Config.hpp:/usr/local/include/Config.hpp
+            Base.hpp:/usr/local/include/Base.hpp
+            Detector.hpp:/usr/local/include/Detector.hpp
+            Landmark.hpp:/usr/local/include/Landmark.hpp
+            Gesture.hpp:/usr/local/include/Gesture.hpp
+            visualization.hpp:/usr/local/include/visualization.hpp
+          dependencies: "libopencv-dev"
 
-# This workflow cross-compiles the static library for ARM64 (Raspberry Pi 5) and uploads it as a release asset.
-# The resulting libgestures.a can be downloaded and linked on a Raspberry Pi 5 running 64-bit Linux.
+      - name: Upload DEB to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: kibu-gestures_${{ github.ref_name }}_arm64.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
