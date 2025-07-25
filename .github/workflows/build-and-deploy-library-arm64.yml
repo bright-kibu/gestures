@@ -58,6 +58,19 @@ jobs:
           cp Landmark.hpp $DEBROOT/usr/local/include/
           cp Gesture.hpp $DEBROOT/usr/local/include/
           cp visualization.hpp $DEBROOT/usr/local/include/
+          mkdir -p $DEBROOT/usr/local/lib/pkgconfig
+          cat <<EOF > $DEBROOT/usr/local/lib/pkgconfig/gestures.pc
+          prefix=/usr/local
+          exec_prefix=${prefix}
+          libdir=${exec_prefix}/lib
+          includedir=${prefix}/include
+
+          Name: gestures
+          Description: Hand gesture recognition C++ library
+          Version: $VERSION
+          Libs: -L${libdir} -lgestures
+          Cflags: -I${includedir}
+          EOF
           mkdir -p $DEBROOT/DEBIAN
           cat <<EOF > $DEBROOT/DEBIAN/control
           Package: $PKGNAME
