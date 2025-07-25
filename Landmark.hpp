@@ -62,10 +62,6 @@ private:
     double profile_pre_;
     double profile_model_;
     double profile_post_;
-    
-#ifdef HAILO_SDK_AVAILABLE
-    // Hailo-specific members - not needed since we use HailoInference class
-#endif
 };
 
 } // namespace robot

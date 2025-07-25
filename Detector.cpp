@@ -5,9 +5,7 @@
 #include <thread>
 #include <cassert>
 
-#ifdef HAILO_SDK_AVAILABLE
 using namespace hailort;
-#endif
 
 namespace robot {
 
@@ -16,16 +14,12 @@ namespace robot {
 // ============================================================================
 
 HailoInference::HailoInference() : next_model_id_(0), shutdown_requested_(false) {
-#ifdef HAILO_SDK_AVAILABLE
     auto expected_device = VDevice::create();
     if (!expected_device) {
         throw std::runtime_error("Failed to create Hailo VDevice");
     }
     device_ = std::move(expected_device.value());
     std::cout << "[HailoInference] Hailo VDevice created successfully" << std::endl;
-#else
-    std::cout << "[HailoInference] Mock Hailo VDevice initialized (SDK not available)" << std::endl;
-#endif
 }
 
 int HailoInference::load_model(const std::string& hef_path) {
@@ -37,7 +31,6 @@ int HailoInference::load_model(const std::string& hef_path) {
     ModelInfo model_info;
     model_info.hef_path = hef_path;
     
-#ifdef HAILO_SDK_AVAILABLE
     try {
         // Load HEF file
         auto expected_hef = Hef::create(hef_path);
@@ -121,8 +114,6 @@ int HailoInference::load_model(const std::string& hef_path) {
         std::cerr << "[HailoInference.load_model] Error: " << e.what() << std::endl;
         throw;
     }
-        // End real SDK branch
-#endif  // HAILO_SDK_AVAILABLE
     
     models_[model_id] = std::move(model_info);
     return model_id;
@@ -143,7 +134,6 @@ HailoInference::infer(const std::map<std::string, cv::Mat>& input_data, int hef_
     
     const auto& model_info = models_[hef_id];
     
-// #ifdef HAILO_SDK_AVAILABLE
     try {
         // Use pre-created VStreams with optimized approach (no sleep delays)
         auto& input_vstreams = const_cast<std::vector<InputVStream>&>(model_info.input_vstreams);
@@ -206,8 +196,6 @@ HailoInference::infer(const std::map<std::string, cv::Mat>& input_data, int hef_
         std::cerr << "[HailoInference.infer] Error: " << e.what() << std::endl;
         throw;
     }
-        // End real SDK inference branch
-// #endif  // HAILO_SDK_AVAILABLE
     
     return results;
 }
