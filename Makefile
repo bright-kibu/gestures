@@ -75,18 +75,10 @@ HEADERS = Config.hpp Base.hpp Detector.hpp Landmark.hpp
 
 TARGET = main
 
-# Library target
-LIBRARY = lib.a
-
-# ================================================================================
-# NEW CAMERA DETECTION TARGETS
-# ================================================================================
 
 # Camera-specific sources and targets
 CAMERA_SOURCES = DetectLiveCamera.cpp visualization.cpp Config.cpp Base.cpp Detector.cpp Landmark.cpp Gesture.cpp
 CAMERA_OBJECTS = DetectLiveCamera.o visualization.o Config_camera.o Base_camera.o Detector_camera.o Landmark_camera.o Gesture_camera.o
-# CAMERA_LIBRARY = librobot_camera.so
-# CAMERA_TEST = test_camera_detection
 
 # Camera-specific flags
 CAMERA_ALL_CFLAGS = $(CXXFLAGS_CAMERA) $(OPENCV_INCLUDES) $(LIBCAMERA_CFLAGS) $(HAILO_INCLUDES)
@@ -127,11 +119,6 @@ main.o: main.cpp
 # Default target
 all: lib main
 
-# Build library
-lib: $(OBJECTS)
-	ar rcs $@ $^
-	@echo "Library $(LIBRARY) created successfully"
-
 # Compile source files
 %.o: %.cpp $(HEADERS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
@@ -157,12 +144,10 @@ help:
 	@echo "  all       - Build library and test executable (default)"
 	@echo "  library   - Build only the library"
 	@echo "  test      - Build only the test executable"
-	@echo "  camera    - Build modern camera detection library and test"
 	@echo "  clean     - Remove build artifacts"
 	@echo "  install   - Install library and headers to system"
 	@echo "  rebuild   - Clean and rebuild everything"
 	@echo "  help      - Show this help message"
-	@echo "  help-camera - Show camera-specific help"
 	@echo ""
 	@echo "OpenCV Configuration:"
 	@echo "  The Makefile automatically detects OpenCV using pkg-config or system paths"
