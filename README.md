@@ -9,7 +9,7 @@ Library for hand, landmark and gesture detection using the Hailo embedded AI pro
 - C++ compiler with C++17/C++20 support (g++)
 - OpenCV 4.x
 - Hailo SDK
-- libcamera (optional, for modern camera support)
+- libcamera, libcamera-dev
 
 ### Model Download
 
@@ -68,8 +68,6 @@ The Makefile automatically detects OpenCV and other dependencies. For custom ins
 # Use custom OpenCV path
 make OPENCV_PATH=/path/to/opencv
 
-# Disable libcamera support (use OpenCV fallback)
-make DISABLE_LIBCAMERA=1
 ```
 
 ### Dependencies Status Check

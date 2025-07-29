@@ -49,20 +49,9 @@ HAILO_INCLUDES = -I/usr/include/hailo -I/opt/hailo/include -I..
 HAILO_LIBS = -lhailort
 
 # libcamera configuration for modern camera support
-# Set DISABLE_LIBCAMERA=1 to force OpenCV fallback
-LIBCAMERA_AVAILABLE = $(shell pkg-config --exists libcamera && echo "yes" || echo "no")
-ifndef DISABLE_LIBCAMERA
-ifeq ($(LIBCAMERA_AVAILABLE),yes)
-	LIBCAMERA_CFLAGS = $(shell pkg-config --cflags libcamera) -DLIBCAMERA2_AVAILABLE
-	LIBCAMERA_LIBS = $(shell pkg-config --libs libcamera)
-else
-	LIBCAMERA_CFLAGS =
-	LIBCAMERA_LIBS =
-endif
-else
-	LIBCAMERA_CFLAGS =
-	LIBCAMERA_LIBS =
-endif
+LIBCAMERA_CFLAGS = $(shell pkg-config --cflags libcamera) -DLIBCAMERA2_AVAILABLE
+LIBCAMERA_LIBS = $(shell pkg-config --libs libcamera)
+
 
 # Compilation flags
 INCLUDES = -I. $(OPENCV_INCLUDES) $(HAILO_INCLUDES)
@@ -109,7 +98,7 @@ Gesture_camera.o: Gesture.cpp
 
 
 # Main application for Pi 5 CSI camera detection
-main: main.o $(CAMERA_LIBRARY)
+main: lib main.o $(CAMERA_LIBRARY)
 	$(CXX) -o $@ $< -L. -lrobot_camera -Wl,-rpath,. $(CAMERA_ALL_LIBS)
 	@echo "Main detection application created successfully"
 
