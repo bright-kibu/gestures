@@ -99,8 +99,8 @@ Gesture_camera.o: Gesture.cpp
 
 # Main application for Pi 5 CSI camera detection
 
-main: lib main.o DetectLiveCamera.o visualization.o Config_camera.o Base_camera.o Detector_camera.o Landmark_camera.o Gesture_camera.o
-	$(CXX) -o $@ main.o DetectLiveCamera.o visualization.o Config_camera.o Base_camera.o Detector_camera.o Landmark_camera.o Gesture_camera.o -L. -Wl,-rpath,. -lgestures $(CAMERA_ALL_LIBS)
+main: main.o DetectLiveCamera.o visualization.o Config_camera.o Base_camera.o Detector_camera.o Landmark_camera.o Gesture_camera.o
+	$(CXX) -o $@ main.o DetectLiveCamera.o visualization.o Config_camera.o Base_camera.o Detector_camera.o Landmark_camera.o Gesture_camera.o -L. -Wl,-rpath,. $(CAMERA_ALL_LIBS)
 	@echo "Main detection application created successfully"
 
 main.o: main.cpp
