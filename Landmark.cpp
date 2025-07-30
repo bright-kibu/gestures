@@ -220,7 +220,7 @@ Landmark::predict(const std::vector<cv::Mat>& input_images) {
             // Expected outputs: fc1 (landmarks), fc3 (confidence), fc2/fc4 (other)
             // Output shapes: fc1=[63], fc3=[1], fc2=[63], fc4=[1]
             for (const auto& [name, output] : infer_results) {
-                if (name.find("fc3") != std::string::npos) {  // confidence
+                if (name.find("fc4") != std::string::npos) {  // confidence
                     cv::Mat flat_output = output.reshape(1, output.total());
                     out1 = {static_cast<double>(flat_output.at<float>(0))};
                 } else if (name.find("fc1") != std::string::npos) {  // landmarks (63 values = 21 landmarks * 3 coords)
@@ -290,48 +290,6 @@ Landmark::predict(const std::vector<cv::Mat>& input_images) {
         if (DEBUG) {
             std::cout << "[Landmark.predict] Before fallback: out1.size=" << out1.size() 
                       << ", out2.size=" << out2.size() << std::endl;
-        }
-        
-        // Fallback to mock data if no outputs were processed (for development/testing)
-        if (out1.empty() || out2.empty()) {
-            if (DEBUG) {
-                std::cout << "[Landmark.predict] Incomplete outputs (out1.size=" << out1.size() 
-                          << ", out2.size=" << out2.size() << "), using mock data for: " 
-                          << robot_app_ << " with resolution " << resolution << std::endl;
-            }
-            
-            if (robot_app_ == "robothandlandmark") {
-                out1 = {0.95}; // High confidence
-                out2.resize(21);
-                for (int i = 0; i < 21; ++i) {
-                    double x = 0.3 + 0.4 * (i % 5) / 4.0;
-                    double y = 0.2 + 0.6 * (i / 5) / 4.0;
-                    double z = 0.01 * i;
-                    out2[i] = {x, y, z};
-                }
-            } else if (robot_app_ == "robotfacelandmark") {
-                out1 = {0.98};
-                out2.resize(468);
-                for (int i = 0; i < 468; ++i) {
-                    double angle = 2.0 * M_PI * i / 468.0;
-                    double radius = 0.3 + 0.1 * std::sin(3 * angle);
-                    double x = 0.5 + radius * std::cos(angle);
-                    double y = 0.5 + radius * std::sin(angle);
-                    double z = 0.001 * i;
-                    out2[i] = {x, y, z};
-                }
-            } else if (robot_app_ == "robotposelandmark") {
-                out1 = {0.92};
-                out2.resize(39);
-                for (int i = 0; i < 39; ++i) {
-                    double x = 0.2 + 0.6 * (i % 7) / 6.0;
-                    double y = 0.1 + 0.8 * (i / 7) / 5.0;
-                    double z = 0.01 * i;
-                    double visibility = 0.8 + 0.2 * std::sin(i);
-                    double presence = 0.9;
-                    out2[i] = {x, y, z, visibility, presence};
-                }
-            }
         }
         
         auto post_end = std::chrono::high_resolution_clock::now();

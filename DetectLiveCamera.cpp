@@ -155,18 +155,18 @@ void DetectLiveCamera::processing_loop() {
                     // Step 8: Denormalize landmarks
                     std::vector<std::vector<cv::Point3d>> landmarks = robot_landmark.denormalize_landmarks(landmarks_3d, roi_affine);
 
-                    // Step 9: Process landmarks
+                    // Step 9: Clone Python logic: process each hand if its flag (confidence) is above threshold
+                    double thresh_confidence = 0.5f;
                     for (size_t i = 0; i < flags.size() && i < landmarks.size(); ++i) {
-                        double confidence = flags[i].empty() ? 0.0 : flags[i][0];
-                        if (confidence > 0.3f) {
+                        double flag = flags[i].empty() ? 0.0 : flags[i][0];
+                        if (flag > thresh_confidence) {
                             std::vector<cv::Point2f> landmark_points;
                             std::vector<cv::Point3f> landmark_points_3d;
-                            
                             for (const auto& landmark : landmarks[i]) {
                                 if (landmark.x >= 0 && landmark.x < image.cols && landmark.y >= 0 && landmark.y < image.rows) {
                                     landmark_points.emplace_back(landmark.x, landmark.y);
-                                    landmark_points_3d.emplace_back(static_cast<float>(landmark.x), 
-                                                                   static_cast<float>(landmark.y), 
+                                    landmark_points_3d.emplace_back(static_cast<float>(landmark.x),
+                                                                   static_cast<float>(landmark.y),
                                                                    static_cast<float>(landmark.z));
                                 }
                             }
