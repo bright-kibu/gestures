@@ -41,7 +41,12 @@ struct VStreamInfo {
  */
 class HailoInference {
 public:
+    // NEW: Constructor that accepts a shared VDevice (for VDevice singleton pattern)
+    explicit HailoInference(std::shared_ptr<VDevice> vdevice);
+    
+    // Default constructor (creates its own VDevice - for backward compatibility)
     HailoInference();
+    
     ~HailoInference() = default;
     
     // Model management
@@ -76,7 +81,8 @@ private:
     // Shutdown control
     std::atomic<bool> shutdown_requested_;
     
-    std::unique_ptr<VDevice> device_;
+    // VDevice can now be shared across multiple HailoInference instances
+    std::shared_ptr<VDevice> device_;
 };
 
 /**

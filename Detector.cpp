@@ -13,12 +13,24 @@ namespace robot {
 // HailoInference Implementation
 // ============================================================================
 
+// NEW: Constructor that accepts a shared VDevice (preferred for singleton pattern)
+HailoInference::HailoInference(std::shared_ptr<VDevice> vdevice) 
+    : next_model_id_(0), shutdown_requested_(false), device_(vdevice) {
+    if (!device_) {
+        throw std::runtime_error("[HailoInference] VDevice cannot be null");
+    }
+    std::cout << "[HailoInference] Initialized with shared VDevice" << std::endl;
+}
+
+// Default constructor (creates its own VDevice - for backward compatibility)
 HailoInference::HailoInference() : next_model_id_(0), shutdown_requested_(false) {
     auto expected_device = VDevice::create();
     if (!expected_device) {
         throw std::runtime_error("Failed to create Hailo VDevice");
     }
-    device_ = std::move(expected_device.value());
+    // VDevice::create() returns Expected<unique_ptr<VDevice>>
+    // Convert unique_ptr to shared_ptr
+    device_ = std::shared_ptr<VDevice>(expected_device.release());
     std::cout << "[HailoInference] Hailo VDevice created successfully" << std::endl;
 }
 

@@ -60,7 +60,7 @@ LDFLAGS = $(OPENCV_LIBS) $(HAILO_LIBS)
 # Source files
 SOURCES = Config.cpp Base.cpp Detector.cpp Landmark.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
-HEADERS = Config.hpp Base.hpp Detector.hpp Landmark.hpp
+HEADERS = Config.hpp Base.hpp Detector.hpp Landmark.hpp Gesture.hpp
 
 TARGET = main
 
